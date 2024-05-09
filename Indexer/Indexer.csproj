@@ -8,8 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Handlers\" />
-    <Folder Include="Updaters\" />
+    <Compile Remove="Handlers\**" />
+    <Compile Remove="Updaters\**" />
+    <EmbeddedResource Remove="Handlers\**" />
+    <EmbeddedResource Remove="Updaters\**" />
+    <None Remove="Handlers\**" />
+    <None Remove="Updaters\**" />
   </ItemGroup>
 
   <ItemGroup>

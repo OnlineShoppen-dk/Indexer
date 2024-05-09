@@ -21,11 +21,16 @@ namespace Indexer.Elasticsearch
 
         public ElasticsearchRepository()
         {
-            var uri = new Uri("http://localhost:9200");
+
+            var elasticSearchContainerUri = Environment.GetEnvironmentVariable("ELASTICSEARCH_URI") ?? "";
+            var user = Environment.GetEnvironmentVariable("ELASTICSEARCH_USER") ?? "";
+            var password = Environment.GetEnvironmentVariable("ELASTICSEARCH_PASSWORD") ?? "";
+
+            var uri = new Uri(elasticSearchContainerUri);
 
             _settings = new ElasticsearchClientSettings(uri)
                 .CertificateFingerprint("")
-                .Authentication(new BasicAuthentication("user", "changeme"))
+                .Authentication(new BasicAuthentication(user, password))
                 .DefaultMappingFor<Product>(m => m.IndexName(_productsIndexName));
 
             InitElasticSearchRepository();
@@ -81,6 +86,8 @@ namespace Indexer.Elasticsearch
 
         public async Task<bool> IndexProduct(Product product)
         {
+            await Console.Out.WriteLineAsync(product.ToString());
+
             var response = await _client.IndexAsync(product);
 
             if (response.IsValidResponse)
@@ -89,12 +96,12 @@ namespace Indexer.Elasticsearch
             }
             else
             {
-                Console.WriteLine("FAILURE. GO TO BED!");
+                Console.WriteLine("Failed to index product " + response.ElasticsearchServerError.ToString());
             }
             return response.IsSuccess();
         }
 
-        public bool UpdateProduct(Product product)
+        public async Task<bool> UpdateProduct(Product product)
         {
             var existingProduct = GetProduct(product.Id.ToString());
 
@@ -107,9 +114,9 @@ namespace Indexer.Elasticsearch
                     return false;
                 }
 
-                _client.UpdateAsync<Product, Product>(_productsIndexName, product.Id, u => u.Doc(product));
+                await _client.UpdateAsync<Product, Product>(_productsIndexName, product.Id, u => u.Doc(product));
 
-                IndexProduct(product);
+                await IndexProduct(product);
                 return true;
             }
 

@@ -12,7 +12,7 @@ namespace Indexer.Documents
     public class Product
     {
         public int Id { get; set; }
-        public string Name { get; set; } = null!;
+        public string Name { get; set; }
         public string Description { get; set; } = string.Empty;
         public decimal? Price { get; set; }
         public int? Stock { get; set; } = 0;
@@ -23,5 +23,10 @@ namespace Indexer.Documents
         public List<Image> Images { get; set; } = new();
         public List<Category> Categories { get; set; } = new();
 
+
+        public override string ToString()
+        {
+            return $"{Id}, {Name}, {Description}, {Price}, {Stock}, {Sold}, {CreatedAt}, {Disabled}";
+        }
     }
 }

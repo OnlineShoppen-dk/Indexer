@@ -46,6 +46,7 @@ public class Program
         {
             try
             {
+                Console.WriteLine("Product Received");
                 var body = eventArgs.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 var product = JsonSerializer.Deserialize<Product>(message);
@@ -81,6 +82,8 @@ public class Program
         {
             try
             {
+                Console.WriteLine("Product to be deleted ID received");
+
                 var body = eventArgs.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 await repository.DeleteProduct(message);
@@ -100,7 +103,8 @@ public class Program
 
 
 
-        Console.WriteLine("Press [enter] to exit.");
-        await Task.Run(() => Console.ReadLine());
+        Console.WriteLine(" Press [enter] to exit.");
+        Console.ReadLine();
+        await Task.Run(() => Thread.Sleep(Timeout.Infinite));
     }
 }

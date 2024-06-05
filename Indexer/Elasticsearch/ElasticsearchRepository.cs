@@ -11,11 +11,17 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Indexer.Elasticsearch
 {
+    /// <summary>
+    /// Repository that acts as a mediator between elasticsearch and the domain-logic to be executed. Contains a collection of queries and mutations.
+    /// </summary>
     public class ElasticsearchRepository
     {
         private static ElasticsearchClient _client { get; set; }
         private static ElasticsearchClientSettings _settings;
 
+        /// <summary>
+        /// Name of the elasticsearch index for products
+        /// </summary>
         private static string _productsIndexName = "products";
 
         public ElasticsearchRepository()
@@ -37,7 +43,9 @@ namespace Indexer.Elasticsearch
 
         }
 
-
+        /// <summary>
+        /// Initializes the elasticsearch repository
+        /// </summary>
         public void InitElasticSearchRepository()
         {
             if (_client == null)
@@ -46,6 +54,11 @@ namespace Indexer.Elasticsearch
             }
         }
 
+        /// <summary>
+        /// Get product by product id
+        /// </summary>
+        /// <param name="id">String id of product</param>
+        /// <returns>Product object or null if not found</returns>
         public Product? GetProduct(string id)
         {
             var response = _client.GetAsync<Product>(id).Result;
@@ -61,6 +74,10 @@ namespace Indexer.Elasticsearch
 
         }
 
+        /// <summary>
+        /// Get all existing products from the elasticsearch index
+        /// </summary>
+        /// <returns>An IEnumerable collection of Product objects</returns>
         public IEnumerable<Product> GetAllProducts()
         {
             var response = _client.SearchAsync<Product>(s => s
@@ -83,6 +100,11 @@ namespace Indexer.Elasticsearch
             return new List<Product>();
         }
 
+        /// <summary>
+        /// Adds a product to the the elasticsearch product index
+        /// </summary>
+        /// <param name="product">Product to be indexed</param>
+        /// <returns>A bool as task that represents the asyncronous operation: true if succesful or false if unsuccesful</returns>
         public async Task<bool> IndexProduct(Product product)
         {
             await Console.Out.WriteLineAsync(product.ToString());
@@ -100,6 +122,11 @@ namespace Indexer.Elasticsearch
             return response.IsSuccess();
         }
 
+        /// <summary>
+        /// Update a product object in the elasticsearch index. Indexes the product if it does not exist.
+        /// </summary>
+        /// <param name="product">Product to be updated</param>
+        /// <returns>A bool as task that represents the asyncronous operation: true if succesful or false if unsuccesful</returns>
         public async Task<bool> UpdateProduct(Product product)
         {
             var existingProduct = GetProduct(product.Id.ToString());
@@ -123,6 +150,11 @@ namespace Indexer.Elasticsearch
             return false;
         }
 
+        /// <summary>
+        /// Remove product from elasticsearch index by product id
+        /// </summary>
+        /// <param name="id">Product id as string</param>
+        /// <returns>A bool as task that represents the asyncronous operation: true if succesful or false if unsuccesful</returns>
         public async Task<bool> DeleteProduct(string id)
         {
             var response = await _client.DeleteAsync<Product>(id);

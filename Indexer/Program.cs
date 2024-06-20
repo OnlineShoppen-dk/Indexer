@@ -66,11 +66,11 @@ public class Program
 
         #region Product Delete Queue Handling
 
-        string productDeleteQueueName = "productDeleteQueue";
+        string productDeleteQueueName = "ProductDeleteQueue";
 
 
         channel.QueueDeclare(queue: productDeleteQueueName,
-                             durable: false,
+                             durable: true,
                              exclusive: false,
                              autoDelete: false,
                              arguments: null);
